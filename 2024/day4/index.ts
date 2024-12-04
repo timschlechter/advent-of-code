@@ -1,4 +1,4 @@
-import { Grid } from '../utils/Grid/Grid';
+import { Grid } from '../utils/grid';
 
 const parse = (input: string): Grid<string> =>
   new Grid(input.split('\n').map((line) => line.split('')));
@@ -14,7 +14,7 @@ export const part2 = (input: string) => {
 
   return grid.cells
     .filter((cell) => cell.value === 'A')
-    .map(
+    .flatMap(
       (cell) =>
         ['MSMS', 'SMSM', 'MMSS', 'SSMM'].filter(
           (pattern) =>
@@ -22,7 +22,7 @@ export const part2 = (input: string) => {
             cell.topRight?.value === pattern[1] &&
             cell.bottomLeft?.value === pattern[2] &&
             cell.bottomRight?.value === pattern[3],
-        ).length,
+        ),
     )
-    .reduce((acc, curr) => acc + curr, 0);
+    .length;
 };

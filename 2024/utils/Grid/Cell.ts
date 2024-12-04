@@ -1,17 +1,6 @@
 import { Grid } from './Grid';
 import { Direction } from './Direction';
 
-const DirectionOffsets = {
-  [Direction.Left]: [0, -1],
-  [Direction.Right]: [0, 1],
-  [Direction.Top]: [-1, 0],
-  [Direction.Bottom]: [1, 0],
-  [Direction.TopLeft]: [-1, -1],
-  [Direction.TopRight]: [-1, 1],
-  [Direction.BottomLeft]: [1, -1],
-  [Direction.BottomRight]: [1, 1],
-};
-
 export class Cell<T> {
   constructor(
     public readonly row: number,
@@ -20,25 +9,20 @@ export class Cell<T> {
     private readonly grid: Grid<T>,
   ) {}
 
-  neighbor(direction: Direction): Cell<T> | undefined {
-    const [rowOffset, colOffset] = DirectionOffsets[direction];
-    return this.grid.cell(this.row + rowOffset, this.col + colOffset);
-  }
-
   get left(): Cell<T> | undefined {
-    return this.neighbor(Direction.Left);
+    return this.grid.cell(this.row, this.col - 1);
   }
 
   get right(): Cell<T> | undefined {
-    return this.neighbor(Direction.Right);
+    return this.grid.cell(this.row, this.col + 1);
   }
 
   get top(): Cell<T> | undefined {
-    return this.neighbor(Direction.Top);
+    return this.grid.cell(this.row - 1, this.col);
   }
 
   get bottom(): Cell<T> | undefined {
-    return this.neighbor(Direction.Bottom);
+    return this.grid.cell(this.row + 1, this.col);
   }
 
   get topLeft(): Cell<T> | undefined {
@@ -57,7 +41,7 @@ export class Cell<T> {
     return this.bottom?.right;
   }
 
-  hasValuesInDirection(direction: Direction, values: T[]): boolean {
+  matchesPatternInDirection(values: T[], direction: Direction): boolean {
     if (this.value !== values[0]) {
       return false;
     }
@@ -67,10 +51,8 @@ export class Cell<T> {
     }
 
     return (
-      this.neighbor(direction)?.hasValuesInDirection(
-        direction,
-        values.slice(1),
-      ) ?? false
+      this[direction]?.matchesPatternInDirection(values.slice(1), direction) ??
+      false
     );
   }
 }

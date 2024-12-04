@@ -5,8 +5,9 @@ import { AllDirections, Direction } from './Direction';
 export class Grid<T> {
   readonly cells: Cell<T>[];
 
-  constructor(private readonly values: readonly T[][]) {
+  constructor(private readonly values: T[][]) {
     this.cells = [];
+
     for (let row = 0; row < this.height; row++) {
       for (let col = 0; col < this.width; col++) {
         this.cells.push(new Cell(row, col, values[row][col], this));
@@ -37,11 +38,10 @@ export class Grid<T> {
   }
 
   findPattern(pattern: T[]): { cell: Cell<T>; direction: Direction }[] {
-    return this.cells
-      .map((cell) => AllDirections.map((direction) => ({ cell, direction })))
-      .flat()
-      .filter(({ cell, direction }) =>
-        cell.hasValuesInDirection(direction, pattern),
-      );
+    return this.cells.flatMap((cell) =>
+      AllDirections.filter((direction) =>
+        cell.matchesPatternInDirection(pattern, direction),
+      ).map((direction) => ({ cell, direction })),
+    );
   }
 }

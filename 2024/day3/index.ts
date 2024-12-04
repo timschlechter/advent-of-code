@@ -1,6 +1,4 @@
-export const part1 = (input: string) => [...input.matchAll(/mul\(\d+,\d+\)/g)]
-  .map(match => match[0])
-  .map(mul => [...mul.matchAll(/mul\((\d+),(\d+)\)/g)][0])
+export const part1 = (input: string) => [...input.matchAll(/(?:mul\((\d+),(\d+\)))/g)]
   .map(match => parseInt(match[1]) * parseInt(match[2]))
   .reduce((acc, curr) => acc + curr, 0);
 

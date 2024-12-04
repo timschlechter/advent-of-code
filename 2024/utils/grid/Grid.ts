@@ -37,6 +37,9 @@ export class Grid<T> {
     return this.exists(row, col) ? this.values[row][col] : undefined;
   }
 
+  /**
+   * Returns all cells/direction combinations that match the given pattern
+   */
   findPattern(pattern: T[]): { cell: Cell<T>; direction: Direction }[] {
     return this.cells.flatMap((cell) =>
       AllDirections.filter((direction) =>

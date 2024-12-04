@@ -6,3 +6,6 @@ export const readInput = (folder: string) =>
 
 export const readExample = (folder: string) =>
   fs.readFile(path.resolve(folder, 'example.txt'), 'utf-8');
+
+export const readExample2 = (folder: string) =>
+  fs.readFile(path.resolve(folder, 'example2.txt'), 'utf-8');

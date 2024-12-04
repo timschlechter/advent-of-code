@@ -1,7 +1,7 @@
 import { promises as fs } from 'fs';
 import path from 'path';
 
-export * from './Grid';
+export * from './xrid';
 
 export const readInput = (folder: string) =>
   fs.readFile(path.resolve(folder, 'input.txt'), 'utf-8');

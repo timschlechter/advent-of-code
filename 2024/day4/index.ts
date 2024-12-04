@@ -1,4 +1,4 @@
-import { Grid } from '../utils/grid';
+import { Grid } from '../utils/xrid';
 
 const parse = (input: string): Grid<string> =>
   new Grid(input.split('\n').map((line) => line.split('')));

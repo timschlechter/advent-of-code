@@ -1,5 +1,5 @@
 import { readExample, readInput } from '../utils';
-import { part1, part2, solveDay1Part2 } from '.';
+import { part1, part2 } from '.';
 
 describe('day2', () => {
   it('part1 example', async () => {
@@ -16,6 +16,6 @@ describe('day2', () => {
   });
   it('part2 solution', async () => {
     const input = await readInput(__dirname);
-    expect(solveDay1Part2(input)).toBe(83595109);
+    expect(part2(input)).toBe(83595109);
   });
 });

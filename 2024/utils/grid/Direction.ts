@@ -9,7 +9,11 @@ export enum Direction {
   BottomRight = 'bottomRight',
 }
 
-export type StraightDirection = Direction.Left | Direction.Right | Direction.Top | Direction.Bottom;
+export type StraightDirection =
+  | Direction.Left
+  | Direction.Right
+  | Direction.Top
+  | Direction.Bottom;
 
 export const AllDirections = Object.values(Direction);
 
@@ -32,4 +36,23 @@ export const getOppositeDirection = (direction: Direction): Direction => {
     case Direction.BottomRight:
       return Direction.TopLeft;
   }
+};
+
+export enum Degrees {
+  Ninety,
+  OneEighty,
+  TwoSeventy,
 }
+
+export const rotate90 = (direction: StraightDirection): StraightDirection => {
+  switch (direction) {
+    case Direction.Left:
+      return Direction.Top;
+    case Direction.Right:
+      return Direction.Bottom;
+    case Direction.Top:
+      return Direction.Right;
+    case Direction.Bottom:
+      return Direction.Left;
+  }
+};

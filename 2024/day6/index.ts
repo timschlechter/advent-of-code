@@ -2,6 +2,7 @@ import {
   Direction,
   getOppositeDirection,
   Grid,
+  rotate90,
   StraightDirection
 } from '../utils';
 
@@ -21,13 +22,6 @@ const parse = (input: string): Grid<Position> =>
           .map((x) => ({ isObstacle: x === '#', isGuard: x === '^' })),
       ),
   );
-
-const nextDirection: Record<StraightDirection, StraightDirection> = {
-  [Direction.Top]: Direction.Right,
-  [Direction.Right]: Direction.Bottom,
-  [Direction.Bottom]: Direction.Left,
-  [Direction.Left]: Direction.Top,
-};
 
 const findGuard = (grid: Grid<Position>) =>
   grid.cells.find((cell) => cell.value.isGuard)!;
@@ -51,7 +45,7 @@ const walk = (
     const { value: position } = next;
 
     if (position.isObstacle) {
-      direction = nextDirection[direction];
+      direction = rotate90(direction);
       continue;
     }
 

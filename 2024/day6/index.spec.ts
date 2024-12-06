@@ -10,10 +10,6 @@ describe('day6', () => {
     const input = await readInput(__dirname);
     expect(part1(input)).toBe(4776);
   });
-  it('part2 example with obstacle', async () => {
-    const example = await readExample(__dirname, 2);
-    expect(part1(example)).toBe(undefined);
-  });
   it('part2 example', async () => {
     const example = await readExample(__dirname);
     expect(part2(example)).toBe(6);

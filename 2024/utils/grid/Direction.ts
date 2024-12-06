@@ -17,7 +17,7 @@ export type StraightDirection =
 
 export const AllDirections = Object.values(Direction);
 
-export const getOppositeDirection = (direction: Direction): Direction => {
+export const opposite = (direction: Direction): Direction => {
   switch (direction) {
     case Direction.Left:
       return Direction.Right;
@@ -44,7 +44,7 @@ export enum Degrees {
   TwoSeventy,
 }
 
-export const rotate90 = (direction: StraightDirection): StraightDirection => {
+export const rotate90 = (direction: Direction): Direction => {
   switch (direction) {
     case Direction.Left:
       return Direction.Top;
@@ -54,5 +54,13 @@ export const rotate90 = (direction: StraightDirection): StraightDirection => {
       return Direction.Right;
     case Direction.Bottom:
       return Direction.Left;
+    case Direction.TopLeft:
+      return Direction.TopRight;
+    case Direction.TopRight:
+      return Direction.BottomRight;
+    case Direction.BottomRight:
+      return Direction.BottomLeft;
+    case Direction.BottomLeft:
+      return Direction.TopLeft;
   }
 };

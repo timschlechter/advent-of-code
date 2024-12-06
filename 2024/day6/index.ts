@@ -1,95 +1,93 @@
-import {
-  Direction,
-  getOppositeDirection,
-  Grid,
-  rotate90,
-  StraightDirection
-} from '../utils';
+import { Direction, opposite, Grid, rotate90 } from '../utils';
 
-type Position = {
-  isObstacle: boolean;
-  isGuard: boolean;
-  visitedFrom?: StraightDirection[];
-};
+type Value = { obstacle: boolean; visited: Set<Direction> };
+type Guard = { row: number; col: number; direction: Direction };
+type ParsedInput = { grid: Grid<Value>; guard: Guard };
 
-const parse = (input: string): Grid<Position> =>
-  new Grid(
-    input
-      .split('\n')
-      .map((line) =>
-        line
-          .split('')
-          .map((x) => ({ isObstacle: x === '#', isGuard: x === '^' })),
-      ),
+const parse = (input: string): ParsedInput => {
+  const lines = input.split('\n').map((line) => line.split(''));
+
+  const values = lines.map((line) =>
+    line.map((c) => ({ obstacle: c === '#', visited: new Set<Direction>() })),
   );
 
-const findGuard = (grid: Grid<Position>) =>
-  grid.cells.find((cell) => cell.value.isGuard)!;
+  const grid = new Grid<Value>(values);
 
-const walk = (
-  grid: Grid<Position>,
-  guardDirection: StraightDirection = Direction.Top,
-) => {
-  let guard = findGuard(grid);
-  let direction = guardDirection;
+  const guard = lines
+    .map((line, idx) => ({
+      row: idx,
+      col: line.indexOf('^'),
+      direction: Direction.Top,
+    }))
+    .find((item) => item.col >= 0)!;
 
-  let uniqueVisitedCells = 0;
+  return { grid, guard };
+};
 
-  while (true) {
-    let next = guard[direction];
+const walk = ({ grid, guard }: ParsedInput) => {
+  let { direction } = guard;
+  let curr = grid.cell(guard.row, guard.col)!;
+  let next = curr[direction];
+  let loop = false;
+  let count = 0;
 
-    if (!next) {
-      return uniqueVisitedCells;
-    }
-
-    const { value: position } = next;
-
-    if (position.isObstacle) {
+  while (next && !loop) {
+    if (next.value.obstacle) {
       direction = rotate90(direction);
-      continue;
+    } else if (next.value.visited.has(direction)) {
+      loop = true;
+    } else {
+      if (!next.value.visited.size) {
+        count++;
+      }
+      next.value.visited.add(direction);
+      curr = next;
     }
 
-    if (position.visitedFrom?.includes(direction)) {
-      return undefined;
-    }
-
-    if (!position.visitedFrom) {
-      position.visitedFrom = [];
-      uniqueVisitedCells++;
-    }
-    position.visitedFrom.push(direction);
-    guard = next;
+    next = curr[direction];
   }
+
+  return loop ? -1 : count;
 };
 
-export const part1 = (input: string) => {
-  const grid = parse(input);
-  return walk(grid);
-};
+export const part1 = (input: string) => walk(parse(input));
 
 export const part2 = (input: string) => {
   // Walk the grid to find the route the guard took
-  const walkedGrid = parse(input);
-  const guard = findGuard(walkedGrid);
-  walk(walkedGrid);
+  const { grid, guard } = parse(input);
+  walk({ grid, guard });
 
   // Only need to test placing obstacles on visited cells
-  const visitedCells = walkedGrid.cells
+  const candidates = grid.cells
     .filter((cell) => cell.row !== guard.row || cell.col !== guard.col)
-    .filter((cell) => cell.value.visitedFrom);
+    .filter((cell) => cell.value.visited.size)
+    .map((cell) => {
+      const [direction] = cell.value.visited;
+      return { cell, direction };
+    });
 
-  return visitedCells.filter(({ row, col, value }) => {
-    const grid = parse(input);
-
-    const obstacle = grid.cell(row, col)!;
-    obstacle.value.isObstacle = true;
+  let count = 0;
+  for (const { cell, direction } of candidates) {
+    // Add new obstacle
+    cell.value.obstacle = true;
 
     // Optimize by moving the guard directly into the possible loop
-    const visitedFrom = value.visitedFrom![0];
-    const opposite = getOppositeDirection(visitedFrom);
-    grid.cell(guard.row, guard.col)!.value.isGuard = false;
-    obstacle[opposite]!.value.isGuard = true;
+    const { row, col } = cell[opposite(direction)]!;
+    guard.row = row;
+    guard.col = col;
+    guard.direction = direction;
 
-    return !walk(grid, visitedFrom);
-  }).length;
+    if (walk({ grid, guard }) < 0) {
+      count++;
+    }
+
+    // reset
+    cell.value.obstacle = false;
+
+    grid.cells
+      .filter((cell) => cell.value.visited.size)
+      .forEach((cell) => cell.value.visited.clear());
+  }
+
+  return count;
 };

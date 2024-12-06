@@ -1,22 +1,19 @@
 import { Cell, Direction, Grid, StraightDirection } from '../utils';
 
-enum Sprite {
-  Guard = '^',
-  Obstacle = '#',
-  Empty = '.',
-}
-
-type GridCell = {
-  sprite: Sprite;
-  visitedFrom: Direction[];
+type Position = {
+  isObstacle: boolean;
+  isGuard: boolean;
+  visitedFrom?: Direction[];
 };
 
-const parse = (input: string): Grid<GridCell> =>
+const parse = (input: string): Grid<Position> =>
   new Grid(
     input
       .split('\n')
       .map((line) =>
-        line.split('').map((x) => ({ sprite: x as Sprite, visitedFrom: [] })),
+        line
+          .split('')
+          .map((x) => ({ isObstacle: x === '#', isGuard: x === '^' })),
       ),
   );
 
@@ -27,56 +24,60 @@ const nextDirection: Record<StraightDirection, StraightDirection> = {
   [Direction.Left]: Direction.Top,
 };
 
-const findGuard = (grid: Grid<GridCell>) =>
-  grid.cells.find((cell) => cell.value.sprite === Sprite.Guard)!;
+const findGuard = (grid: Grid<Position>) =>
+  grid.cells.find((cell) => cell.value.isGuard)!;
 
-const walkRoute = (grid: Grid<GridCell>) => {
+const walk = (grid: Grid<Position>) => {
   let guard = findGuard(grid);
   let direction = Direction.Top;
 
-  let steps = 0;
+  let uniqueVisitedCells = 0;
 
   while (true) {
-    const next: Cell<GridCell> | undefined = guard[direction];
+    let next = guard[direction];
 
     if (!next) {
-      return steps;
+      return uniqueVisitedCells;
     }
 
-    if (next.value.visitedFrom.includes(direction)) {
+    const { value: position } = next;
+    
+    if (position.isObstacle) {
+      direction = nextDirection[direction];
+      continue;
+    }
+    
+    if (position.visitedFrom?.includes(direction)) {
       return undefined;
     }
 
-    if (next.value.sprite === Sprite.Obstacle) {
-      direction = nextDirection[direction];
-    } else {
-      if (next.value.visitedFrom.length === 0) {
-        steps++;
-      }
-      next.value.visitedFrom.push(direction);
-      guard = next;
+    if (!position.visitedFrom) {
+      position.visitedFrom = [];
+      uniqueVisitedCells++;
     }
+    position.visitedFrom.push(direction);
+    guard = next;
   }
 };
 
 export const part1 = (input: string) => {
   const grid = parse(input);
-  const result = walkRoute(grid);
+  const result = walk(grid);
   return result;
 };
 
 export const part2 = (input: string) => {
   const grid = parse(input);
   const guard = findGuard(grid);
-  walkRoute(grid);
+  walk(grid);
 
   const visitedCells = grid.cells
     .filter((cell) => cell.row !== guard.row || cell.col !== guard.col)
-    .filter((cell) => cell.value.visitedFrom.length > 0);
+    .filter((cell) => cell.value.visitedFrom);
 
   return visitedCells.filter((cell) => {
     const modifiedGrid = parse(input);
-    modifiedGrid.values[cell.row][cell.col].sprite = Sprite.Obstacle;
-    return !walkRoute(modifiedGrid);
+    modifiedGrid.values[cell.row][cell.col].isObstacle = true;
+    return !walk(modifiedGrid);
   }).length;
 };

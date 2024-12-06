@@ -33,6 +33,12 @@ export class Grid<T> {
       : undefined;
   }
 
+  find({ row, col } : { row: number, col: number }): Cell<T> | undefined {
+    return this.exists(row, col)
+      ? this.cells[row * this.width + col]
+      : undefined;
+  }
+
   value(row: number, col: number): T | undefined {
     return this.exists(row, col) ? this.values[row][col] : undefined;
   }

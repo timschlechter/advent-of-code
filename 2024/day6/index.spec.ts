@@ -1,7 +1,7 @@
 import { readExample, readInput } from '../utils';
 import { part1, part2 } from '.';
 
-describe('day5', () => {
+describe('day6', () => {
   it('part1 example', async () => {
     const example = await readExample(__dirname);
     expect(part1(example)).toBe(41);

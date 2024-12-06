@@ -5,7 +5,6 @@ export class Cell<T> {
   constructor(
     public readonly row: number,
     public readonly col: number,
-    public readonly value: T,
     private readonly grid: Grid<T>,
   ) {}
 
@@ -41,8 +40,16 @@ export class Cell<T> {
     return this.bottom?.right;
   }
 
+  get value(): T {
+    return this.grid.value(this.row, this.col) as T;
+  }
+
+  set value(value : T) {
+    this.grid.values[this.row][this.col] = value;
+  }
+
   matchesPatternInDirection(values: T[], direction: Direction): boolean {
-    if (this.value !== values[0]) {
+    if (this.grid.value(this.row, this.col) !== values[0]) {
       return false;
     }
 

@@ -9,4 +9,6 @@ export enum Direction {
   BottomRight = 'bottomRight',
 }
 
+export type StraightDirection = Direction.Left | Direction.Right | Direction.Top | Direction.Bottom;
+
 export const AllDirections = Object.values(Direction);

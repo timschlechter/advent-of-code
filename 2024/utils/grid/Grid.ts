@@ -5,12 +5,12 @@ import { AllDirections, Direction } from './Direction';
 export class Grid<T> {
   readonly cells: Cell<T>[];
 
-  constructor(private readonly values: T[][]) {
+  constructor(public values: T[][]) {
     this.cells = [];
 
     for (let row = 0; row < this.height; row++) {
       for (let col = 0; col < this.width; col++) {
-        this.cells.push(new Cell(row, col, values[row][col], this));
+        this.cells.push(new Cell(row, col, this));
       }
     }
   }
@@ -46,5 +46,9 @@ export class Grid<T> {
         cell.matchesPatternInDirection(pattern, direction),
       ).map((direction) => ({ cell, direction })),
     );
+  }
+
+  toString() {
+    return this.values.map((row) => row.join('')).join('\n');
   }
 }

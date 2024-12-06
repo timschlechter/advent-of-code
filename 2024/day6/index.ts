@@ -1,9 +1,14 @@
-import { Cell, Direction, Grid, StraightDirection } from '../utils';
+import {
+  Direction,
+  getOppositeDirection,
+  Grid,
+  StraightDirection
+} from '../utils';
 
 type Position = {
   isObstacle: boolean;
   isGuard: boolean;
-  visitedFrom?: Direction[];
+  visitedFrom?: StraightDirection[];
 };
 
 const parse = (input: string): Grid<Position> =>
@@ -27,9 +32,12 @@ const nextDirection: Record<StraightDirection, StraightDirection> = {
 const findGuard = (grid: Grid<Position>) =>
   grid.cells.find((cell) => cell.value.isGuard)!;
 
-const walk = (grid: Grid<Position>) => {
+const walk = (
+  grid: Grid<Position>,
+  guardDirection: StraightDirection = Direction.Top,
+) => {
   let guard = findGuard(grid);
-  let direction = Direction.Top;
+  let direction = guardDirection;
 
   let uniqueVisitedCells = 0;
 
@@ -41,12 +49,12 @@ const walk = (grid: Grid<Position>) => {
     }
 
     const { value: position } = next;
-    
+
     if (position.isObstacle) {
       direction = nextDirection[direction];
       continue;
     }
-    
+
     if (position.visitedFrom?.includes(direction)) {
       return undefined;
     }
@@ -62,22 +70,32 @@ const walk = (grid: Grid<Position>) => {
 
 export const part1 = (input: string) => {
   const grid = parse(input);
-  const result = walk(grid);
-  return result;
+  return walk(grid);
 };
 
 export const part2 = (input: string) => {
-  const grid = parse(input);
-  const guard = findGuard(grid);
-  walk(grid);
+  // Walk the grid to find the route the guard took
+  const walkedGrid = parse(input);
+  const guard = findGuard(walkedGrid);
+  walk(walkedGrid);
 
-  const visitedCells = grid.cells
+  // Only need to test placing obstacles on visited cells
+  const visitedCells = walkedGrid.cells
     .filter((cell) => cell.row !== guard.row || cell.col !== guard.col)
     .filter((cell) => cell.value.visitedFrom);
 
-  return visitedCells.filter((cell) => {
-    const modifiedGrid = parse(input);
-    modifiedGrid.values[cell.row][cell.col].isObstacle = true;
-    return !walk(modifiedGrid);
+  return visitedCells.filter(({ row, col, value }) => {
+    const grid = parse(input);
+
+    const obstacle = grid.cell(row, col)!;
+    obstacle.value.isObstacle = true;
+
+    // Optimize by moving the guard directly into the possible loop
+    const visitedFrom = value.visitedFrom![0];
+    const opposite = getOppositeDirection(visitedFrom);
+    grid.cell(guard.row, guard.col)!.value.isGuard = false;
+    obstacle[opposite]!.value.isGuard = true;
+
+    return !walk(grid, visitedFrom);
   }).length;
 };

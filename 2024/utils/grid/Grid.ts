@@ -48,7 +48,7 @@ export class Grid<T> {
     );
   }
 
-  toString() {
-    return this.values.map((row) => row.join('')).join('\n');
+  toString(render: (value: T) => any = (value) => value?.toString()): string {
+    return this.values.map((row) => row.map(render).join('')).join('\n');
   }
 }

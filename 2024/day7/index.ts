@@ -24,9 +24,8 @@ const calculate = (a: number, b: number, op: string): number => {
 const canSolve = (eq: Equation, operators: string[]): boolean => {
   const { target, start, values } = eq;
 
-  if (values.length === 0) {
-    return start === target;
-  }
+  if (start > target) return false;
+  if (values.length === 0) return start === target;
 
   return operators.some((op) =>
     canSolve(

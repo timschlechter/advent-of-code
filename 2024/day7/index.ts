@@ -1,3 +1,9 @@
+enum Operator {
+  Add = 0,
+  Multiply = 1,
+  Concat = 2,
+}
+
 type Equation = {
   target: number;
   start: number;
@@ -13,38 +19,42 @@ const parse = (input: string): Equation[] =>
       return { target, start, values };
     });
 
-const calculate = (a: number, b: number, op: string): number => {
-  if (op === '+') return a + b;
-  if (op === '*') return a * b;
-  if (op === '||') return parseInt(`${a}${b}`, 10);
-
-  throw new Error(`Unsupported operator: ${op}`);
+const calculate = (a: number, b: number, op: Operator): number => {
+  if (op === Operator.Add) return a + b;
+  if (op === Operator.Multiply) return a * b;
+  return a * (b < 10 ? 10 : b < 100 ? 100 : 1000) + b;
 };
 
-const canSolve = (eq: Equation, operators: string[]): boolean => {
-  const { target, start, values } = eq;
+const canSolve = (eq: Equation, operators: Operator[]): boolean => {
+  const {
+    target,
+    start,
+    values: [head, ...tail],
+  } = eq;
 
   if (start > target) return false;
-  if (values.length === 0) return start === target;
+  if (!head) return start === target;
 
-  return operators.some((op) =>
-    canSolve(
-      {
-        target,
-        start: calculate(start, values[0], op),
-        values: values.slice(1),
-      },
-      operators,
-    ),
-  );
+  return operators.some((op) => {
+    const eq = {
+      target,
+      start: calculate(start, head, op),
+      values: tail,
+    };
+    return canSolve(eq, operators);
+  });
 };
 
 export const part1 = (input: string) =>
   parse(input)
-    .filter((eq) => canSolve(eq, ['+', '*']))
+    .filter((eq) => canSolve(eq, [Operator.Add, Operator.Multiply]))
     .reduce((acc, curr) => acc + curr.target, 0);
 
 export const part2 = (input: string) =>
   parse(input)
-    .filter((eq) => canSolve(eq, ['+', '*', '||']))
+    .filter(
+      (eq) =>
+        canSolve(eq, [Operator.Add, Operator.Multiply]) ||
+        canSolve(eq, [Operator.Add, Operator.Multiply, Operator.Concat]),
+    )
     .reduce((acc, curr) => acc + curr.target, 0);

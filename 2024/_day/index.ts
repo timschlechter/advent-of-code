@@ -1,9 +1,7 @@
-import { Direction, opposite, Grid, rotate90 } from '../utils';
-
-type ParsedInput = {};
-
-const parse = (input: string): ParsedInput => {
-  return 0;
+const parse = (input: string): number[][] => {
+  return input
+    .split('\n')
+    .map((line) => line.split(' ').map((x) => parseInt(x)));
 };
 
 export const part1 = (input: string) => {

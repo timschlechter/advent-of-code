@@ -15,7 +15,13 @@ export type StraightDirection =
   | Direction.Top
   | Direction.Bottom;
 
-export const AllDirections = Object.values(Direction);
+export const Directions = Object.values(Direction);
+export const StraightDirections = [
+  Direction.Left,
+  Direction.Right,
+  Direction.Top,
+  Direction.Bottom,
+];
 
 export const opposite = (direction: Direction): Direction => {
   switch (direction) {

@@ -1,6 +1,6 @@
 import { dir } from 'console';
 import { Cell } from './Cell';
-import { AllDirections, Direction } from './Direction';
+import { Directions, Direction } from './Direction';
 
 export class Grid<T> {
   readonly cells: Cell<T>[];
@@ -42,7 +42,7 @@ export class Grid<T> {
    */
   findPattern(pattern: T[]): { cell: Cell<T>; direction: Direction }[] {
     return this.cells.flatMap((cell) =>
-      AllDirections.filter((direction) =>
+      Directions.filter((direction) =>
         cell.matchesPatternInDirection(pattern, direction),
       ).map((direction) => ({ cell, direction })),
     );

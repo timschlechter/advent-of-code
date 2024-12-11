@@ -48,6 +48,13 @@ export class Cell<T> {
     this.grid.values[this.row][this.col] = value;
   }
 
+  *trbl() {
+    if (this.top) yield this.top;
+    if (this.right) yield this.right;
+    if (this.bottom) yield this.bottom;
+    if (this.left) yield this.left;
+  }
+
   matchesPatternInDirection(values: T[], direction: Direction): boolean {
     if (this.grid.value(this.row, this.col) !== values[0]) {
       return false;

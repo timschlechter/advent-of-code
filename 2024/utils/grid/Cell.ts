@@ -24,6 +24,25 @@ export class Cell<T> {
     return this.grid.cell(this.row + 1, this.col);
   }
 
+  get orthogonalNeighbors(): Cell<T>[] {
+    return [this.top, this.right, this.bottom, this.left].filter(
+      (cell) => cell !== undefined,
+    ) as Cell<T>[];
+  }
+
+  get neighbors(): Cell<T>[] {
+    return [
+      this.top,
+      this.topRight,
+      this.right,
+      this.bottomRight,
+      this.bottom,
+      this.bottomLeft,
+      this.left,
+      this.topLeft,
+    ].filter((cell) => cell !== undefined) as Cell<T>[];
+  }
+
   get topLeft(): Cell<T> | undefined {
     return this.top?.left;
   }
@@ -44,7 +63,7 @@ export class Cell<T> {
     return this.grid.value(this.row, this.col) as T;
   }
 
-  set value(value : T) {
+  set value(value: T) {
     this.grid.values[this.row][this.col] = value;
   }
 

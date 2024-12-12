@@ -27,11 +27,11 @@ describe('day12', () => {
     const example = await readExample(__dirname, 2);
     expect(part2(example)).toBe(436);
   });
-it('part2 example 4', async () => {
-  const example = await readExample(__dirname, 4);
-  expect(part2(example)).toBe(368);
-});
-  
+  it('part2 example 4', async () => {
+    const example = await readExample(__dirname, 4);
+    expect(part2(example)).toBe(368);
+  });
+
   it('part2 solution', async () => {
     const input = await readInput(__dirname);
     expect(part2(input)).toBe(811148);

@@ -1,4 +1,4 @@
-import { Cell, Grid, StraightDirections } from '../utils';
+import { Cell, Grid, BasicDirections } from '../utils';
 
 const parse = (input: string): Grid<number> =>
   new Grid(
@@ -8,7 +8,7 @@ const parse = (input: string): Grid<number> =>
 const walkToTop = (pos: Cell<number>): Cell<number>[] => {
   return pos.value === 9
     ? [pos]
-    : StraightDirections.map((direction) => pos[direction]).flatMap((next) =>
+    : BasicDirections.map((direction) => pos[direction]).flatMap((next) =>
         next?.value !== pos.value + 1 ? [] : walkToTop(next),
       );
 };

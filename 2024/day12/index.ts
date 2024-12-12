@@ -1,4 +1,4 @@
-import { Cell, Directions, Grid, StraightDirections } from '../utils';
+import { Cell, Directions, Grid, BasicDirections } from '../utils';
 
 type Region = {
   cells: Cell<Plot>[];
@@ -65,7 +65,7 @@ const discoverRegion = (cell: Cell<Plot>, region?: Region): Region => {
   const { plant } = cell.value;
   region.corners += calculateCorners(cell, plant);
 
-  const neighbors = StraightDirections.map((direction) => cell[direction])
+  const neighbors = BasicDirections.map((direction) => cell[direction])
     .filter((next) => !!next)
     .filter((neighbor) => neighbor && neighbor.value.plant === plant);
 

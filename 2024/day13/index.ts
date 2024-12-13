@@ -3,8 +3,8 @@ type Machine = {
   aY: number; // increment Y when A pressed
   bX: number; // increment X when B pressed
   bY: number; // increment Y when B pressed
-  pX: number; // X of price
-  pY: number; // Y of price
+  pX: number; // X of prize
+  pY: number; // Y of prize
 };
 
 const parse = (input: string): Machine[] => {

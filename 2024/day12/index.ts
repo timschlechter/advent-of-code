@@ -48,7 +48,8 @@ const calculateRegion = (cell: Cell<string>, region?: Region): Region => {
   region.perimeter += 4 - neighbors.length;
   region.corners += calculateCorners(cell);
 
-  neighbors.forEach((neighbor) => calculateRegion(neighbor, region));
+  neighbors
+    .forEach((neighbor) => calculateRegion(neighbor, region));
 
   return region;
 };

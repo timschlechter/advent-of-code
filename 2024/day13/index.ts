@@ -1,3 +1,5 @@
+import { machine } from 'os';
+
 type Coordinate = { x: number; y: number };
 type Button = { dX: number; dY: number; tokens: number; press: () => void };
 type Machine = {
@@ -53,39 +55,76 @@ const parse = (input: string): Machine[] => {
   });
 };
 
+// aX: increment X when A pressed
+// aY: increment Y when A pressed
+// bX: increment X when B pressed
+// bY: increment Y when B pressed
+// A: number of times A pressed
+// B: number of times B pressed
+// pX: X of price
+// pY: B of price
+export const solve = (
+  aX: number,
+  aY: number,
+  bX: number,
+  bY: number,
+  pX: number,
+  pY: number,
+): { A: number; B: number } => {
+  // aX*A + bX*B = pX
+  // aY*A + bY*B = pY
+
+  // Cancel out A part to calculate B
+
+  // (aX* aY)*A + (bX* aY)*B      = pX* aY
+  // (aY*-aX)*A + (bY*-aX)*B      = pY*-aX
+  // ---------------------------------------------  +
+  //      0     + bX*aY + bY*-aX  = pX*aY + pY*-aX
+  const B = (pX * aY + pY * -aX) / (bX * aY + bY * -aX);
+
+  // Plug in B to calculate A
+  const A = (pX - bX * B) / aX;
+
+  return { A, B };
+};
+
 const calculateCosts = (machine: Machine): number => {
-  let minCost = Number.MAX_SAFE_INTEGER;
-  const maxAX = Math.floor(machine.prize.x / machine.buttons.A.dX);
-  const maxAY = Math.floor(machine.prize.y / machine.buttons.A.dY);
-  const maxBX = Math.floor(machine.prize.x / machine.buttons.B.dX);
-  const maxBY = Math.floor(machine.prize.y / machine.buttons.B.dY);
+  const [
+    aX, // increment X when A pressed
+    aY, // increment Y when A pressed
+    bX, // increment X when B pressed
+    bY, // increment Y when B pressed
+    pX, // X of price
+    pY, // Y of price
+  ] = [
+    machine.buttons.A.dX,
+    machine.buttons.A.dY,
+    machine.buttons.B.dX,
+    machine.buttons.B.dY,
+    machine.prize.x,
+    machine.prize.y,
+  ];
 
-  const maxA = Math.min(maxAX, maxAY, 100);
-  const maxB = Math.min(maxBX, maxBY, 100);
+  // A: number of times A pressed
+  // B: number of times B pressed
 
-  const instructions = ('A'.repeat(maxA) + 'B'.repeat(maxB)).split('');
-  for (let start = 0; start < instructions.length; start++) {
-    machine.claw = { x: 0, y: 0 };
-    machine.tokens = 0;
-    for (const instruction of instructions.slice(start)) {
-      machine.buttons[instruction].press();
+  // aX*A + bX*B = pX
+  // aY*A + bY*B = pY
 
-      if (
-        machine.claw.x === machine.prize.x &&
-        machine.claw.y === machine.prize.y
-      ) {
-        minCost = Math.min(minCost, machine.tokens);
-        break;
-      }
-      if (
-        machine.claw.x > machine.prize.x ||
-        machine.claw.y > machine.prize.y
-      ) {
-        break;
-      }
-    }
-  }
-  return minCost === Number.MAX_SAFE_INTEGER ? NaN : minCost;
+  // Cancel out A part to calculate B
+
+  // (aX* aY)*A + (bX* aY)*B      = pX* aY
+  // (aY*-aX)*A + (bY*-aX)*B      = pY*-aX
+  // ---------------------------------------------  +
+  //      0     + bX*aY + bY*-aX  = pX*aY + pY*-aX
+  const B = (pX * aY + pY * -aX) / (bX * aY + bY * -aX);
+
+  // Plug in B to calculate A
+  const A = (pX - bX * B) / aX;
+
+  return Number.isInteger(A) && Number.isInteger(B)
+    ? A * machine.buttons.A.tokens + B * machine.buttons.B.tokens
+    : NaN;
 };
 
 export const part1 = (input: string) => {
@@ -95,5 +134,14 @@ export const part1 = (input: string) => {
 };
 
 export const part2 = (input: string) => {
-  return parse(input);
+  return parse(input)
+    .map((machine) => ({
+      ...machine,
+      prize: {
+        x: machine.prize.x + 10000000000000,
+        y: machine.prize.y + 10000000000000,
+      },
+    }))
+    .map((machine) => calculateCosts(machine))
+    .reduce((acc, curr) => acc + (isNaN(curr) ? 0 : curr), 0);
 };

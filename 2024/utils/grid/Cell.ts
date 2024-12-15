@@ -3,9 +3,9 @@ import { Direction } from './Direction';
 
 export class Cell<T> {
   constructor(
-    public readonly row: number,
-    public readonly col: number,
-    private readonly grid: Grid<T>,
+    public row: number,
+    public col: number,
+    public readonly grid: Grid<T>,
   ) {}
 
   get left(): Cell<T> | undefined {
@@ -80,5 +80,11 @@ export class Cell<T> {
       this[direction]?.matchesPatternInDirection(values.slice(1), direction) ??
       false
     );
+  }
+  toString(render?: (value: T) => any): string {
+    return render ? render(this.value) : `${this.value}: (${this.col},${this.row})`;
+  }
+  swapValueWith(other: Cell<T>): void {
+    [this.value, other.value] = [other.value, this.value];
   }
 }

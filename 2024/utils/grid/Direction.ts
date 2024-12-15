@@ -15,6 +15,12 @@ export type OrthogonalDirection =
   | Direction.Top
   | Direction.Bottom;
 
+export type DiagonalDirection =
+  | Direction.TopLeft
+  | Direction.TopRight
+  | Direction.BottomLeft
+  | Direction.BottomRight;
+
 export const Directions = Object.values(Direction);
 export const OrthogonalDirections = [
   Direction.Left,

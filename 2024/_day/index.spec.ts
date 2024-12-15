@@ -4,7 +4,7 @@ import { part1, part2 } from '.';
 describe('day8', () => {
   it('part1 example', async () => {
     const example = await readExample(__dirname);
-    expect(part1(example)).toBeDefined();
+    expect(part1(example)).toEqual([[0]]);
   });
   // it('part1 solution', async () => {
   //   const input = await readInput(__dirname);

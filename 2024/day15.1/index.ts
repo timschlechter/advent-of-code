@@ -1,11 +1,11 @@
 import { Cell, Direction, Grid } from '../utils';
 
-enum Value {
-  Robot = '@',
-  Box = 'O',
-  Wall = '#',
-  Empty = '.',
-}
+const ROBOT = '@';
+const BOX = 'O';
+const WALL = '#';
+const EMPTY = '.';
+
+type Value = '@' | 'O' | '#' | '.';
 
 const moveMap: Record<string, Direction> = {
   '<': Direction.Left,
@@ -14,9 +14,7 @@ const moveMap: Record<string, Direction> = {
   v: Direction.Bottom,
 };
 
-const parsePart1 = (
-  input: string,
-): { map: Grid<Value>; moves: Direction[] } => {
+const parse = (input: string): { map: Grid<Value>; moves: Direction[] } => {
   const [mapLines, movesLines] = input.split('\n\n');
   const map = new Grid<Value>(
     mapLines.split('\n').map((line) => line.split('') as Value[]),
@@ -26,51 +24,37 @@ const parsePart1 = (
   return { map, moves };
 };
 
-export const move = (thing: Cell<Value>, direction: Direction): boolean => {
-  //console.log(thing.grid.toString(), thing.toString(), direction);
-
+export const canMove = (thing: Cell<Value>, direction: Direction): boolean => {
   const next = thing[direction];
-  if (!next) {
-    return false;
-  }
-
-  if (next.value === Value.Empty) {
-    [thing.value, next.value] = [next.value, thing.value];
+  if (next?.value === EMPTY) {
     return true;
-  } else if (next.value === Value.Box) {
-    if (move(next, direction)) {
-      [thing.value, next.value] = [next.value, thing.value];
-
-      //console.log(thing.grid.toString());
-      return true;
-    }
+  } else if (next?.value === BOX && canMove(next, direction)) {
+    return true;
   }
-
-  //console.log(thing.grid.toString());
   return false;
 };
 
-// export const execute = (input: string, numberOfMoves: number) => {
-//   const { map, moves } = parse(input);
+export const move = (thing: Cell<Value>, direction: Direction) => {
+  const next = thing[direction]!;
+  if (next.value === BOX) {
+    move(next, direction);
+  }
+  [thing.value, next.value] = [next.value, thing.value];
 
-//   for (let i = 0; i < moves.length; i++) {
-//     const robot = map.cells.find((cell) => cell.value === Thing.Robot)!;
-//     move(robot, moves[i]);
-//   }
-
-//   const boxes = map.cells.filter((cell) => cell.value === Thing.Box);
-//   return boxes.map((box) => (box.row+1*100+box.col+1)).reduce((acc, x) => acc + x, 0);
-// };
+  return next;
+};
 
 export const solve = (input: string) => {
-  const { map, moves } = parsePart1(input);
+  const { map, moves } = parse(input);
 
-  for (let i = 0; i < moves.length; i++) {
-    const robot = map.cells.find((cell) => cell.value === Value.Robot)!;
-    move(robot, moves[i]);
+  let robot = map.cells.find((cell) => cell.value === ROBOT)!;
+  for (const direction of moves) {
+    if (canMove(robot, direction)) {
+      robot = move(robot, direction);
+    }
   }
 
-  const boxes = map.cells.filter((cell) => cell.value === Value.Box);
+  const boxes = map.cells.filter((cell) => cell.value === BOX);
   return boxes
     .map((box) => box.row * 100 + box.col)
     .reduce((acc, x) => acc + x, 0);

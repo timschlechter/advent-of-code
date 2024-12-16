@@ -82,7 +82,7 @@ export class Cell<T> {
     );
   }
   toString(render?: (value: T) => any): string {
-    return render ? render(this.value) : `${this.value}: (${this.col},${this.row})`;
+    return render ? render(this.value) : `${this.value}: (${this.row},${this.col})`;
   }
   swapValueWith(other: Cell<T>): void {
     [this.value, other.value] = [other.value, this.value];

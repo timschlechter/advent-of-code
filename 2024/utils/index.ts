@@ -2,6 +2,7 @@ import { promises as fs } from 'fs';
 import path from 'path';
 
 export * from './grid';
+export * from './PriorityQueue';
 
 export const readInput = (folder: string) =>
   fs.readFile(path.resolve(folder, 'input.txt'), 'utf-8');

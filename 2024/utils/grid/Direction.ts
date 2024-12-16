@@ -76,3 +76,5 @@ export const rotate90 = (direction: Direction): Direction => {
       return Direction.TopLeft;
   }
 };
+
+export const rotate270 = (direction: Direction): Direction => rotate90(rotate90(rotate90(direction)));
